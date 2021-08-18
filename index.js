@@ -9,14 +9,18 @@ const pass = process.env.PASS;
 
 (async () => {
    try {
+
       await instagram.launchBrowser();
       await instagram.createNewPage();
+      await instagram.goToProfile(competitor);
+      await instagram.mainProfileData(competitor).then(res => console.log(res));
+      await instagram.getAllposts(competitor).then(res => console.log(res));
 
-      await instagram.mainProfileData(competitor);
-      // await instagram.browser.close();
+      await instagram.browser.close();
 
    } catch (e) {
       console.log(e)
       await instagram.browser.close();
    }
+
 })();

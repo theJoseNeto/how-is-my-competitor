@@ -1,8 +1,17 @@
 const Browser = require("../browser");
+const path = require('path');
+const fs = require('fs').promises;
 
 class Instagram extends Browser {
+   async cookiesSession() {
+      const cookiesString = await fs.readFile(path.resolve(__dirname, 'cookies'), 'cookies.json');
+      const cookies = JSON.parse(cookiesString);
+      await this.page.setCookie(...cookies);
+
+   }
 
    async login(user, pass) {
+
       await this.page.type('input[type="text"]', user);
       await this.page.type('input[type="password"]', pass);
 
@@ -38,6 +47,8 @@ class Instagram extends Browser {
 
       });
 
+
+
       return data;
    }
 
@@ -50,51 +61,51 @@ class Instagram extends Browser {
       return bio;
    }
 
-   async getAllposts(thisUser) {
 
-      if (thisUser === undefined) {
-         this.browser.close();
-         console.log('Invalid user.')
-         return;
-      }
+   async mainProfileData(competitor) {
+      let data = {}
+      await this.goToProfile(competitor);
+
+      await this.numberOfPosts().then(res => data.posts = res);
+
+      await this.numberOfFollowers().then(res => data.followers = res);
+
+      await this.bioData().then(res => data.bio = res);
+
+      return data;
+
+   }
 
 
-      await this.goToProfile(thisUser);
+
+
+   async getAllposts(competitor) {
+
+      await this.page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 
       const hrefs = await this.page.$$eval('article.ySN3v a', a => {
          let links = [];
          a.map(link => {
             links.push(link.href);
-         });
 
+         });
          return links;
       });
-
-      await this.page.waitForTimeout(5000);
-
       return hrefs;
    }
 
-   async getPostsData(user, postsUrl = Array()) {
-      const numberOfPosts = postsUrl.length();
 
 
-   }
-
-   async mainProfileData(competitor) {
-
-      await this.goToProfile(competitor);
-      
-      await this.numberOfPosts().then(res => console.log(`${competitor} fez ${res} postagens`));
-
-      await this.numberOfFollowers().then(res => console.log(`${competitor} tem ${res} seguidores`));
-
-      await this.bioData().then(res => console.log(`Como ${competitor} estrutura sua bio: ${res}`));
-   }
 }
 
-
-
-
-
 module.exports = Instagram;
+
+// numero de likes
+//selector da div = Nm9Fw -> class
+//selector do a = zV_Nj >span -> class
+
+
+// data: 
+//selctor  da div = k_Q0X I0_K8  NnvRN -> class
+//selector da tag time = _1o9PC Nzb55 -> class
+
