@@ -1,4 +1,4 @@
 node_modules
 .env
 tasks.md
-src/cookies/cookies.json
+src/cookies/instagramSession.json

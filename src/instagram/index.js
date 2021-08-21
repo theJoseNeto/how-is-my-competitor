@@ -1,23 +1,24 @@
 const Browser = require("../browser");
 const path = require('path');
 const fs = require('fs').promises;
-
+ 
 class Instagram extends Browser {
-   async cookiesSession() {
-      const cookiesString = await fs.readFile(path.resolve(__dirname, 'cookies'), 'cookies.json');
-      const cookies = JSON.parse(cookiesString);
-      await this.page.setCookie(...cookies);
-
-   }
 
    async login(user, pass) {
-
+      // await this.navigateTo('https://www.instagram.com/accounts/login/');
       await this.page.type('input[type="text"]', user);
       await this.page.type('input[type="password"]', pass);
-
       await this.page.click('button[type="submit"]');
+      await this.cookiesSession();
       await this.page.waitForTimeout(8000);
    }
+
+   async cookiesSession() {
+      const cookiesString = await fs.readFile('../cookies/instagramSession.json');
+      const cookies = JSON.parse(cookiesString);
+      await this.page.setCookie(...cookies);
+   }
+
 
    async goToProfile(username) {
       await this.page.goto(`https://www.instagram.com/${username}`);
@@ -63,7 +64,8 @@ class Instagram extends Browser {
 
 
    async mainProfileData(competitor) {
-      let data = {}
+      let data = {};
+
       await this.goToProfile(competitor);
 
       await this.numberOfPosts().then(res => data.posts = res);
@@ -77,23 +79,11 @@ class Instagram extends Browser {
    }
 
 
-
-
-   async getAllposts(competitor) {
-
-      await this.page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-
-      const hrefs = await this.page.$$eval('article.ySN3v a', a => {
-         let links = [];
-         a.map(link => {
-            links.push(link.href);
-
-         });
-         return links;
-      });
-      return hrefs;
+   async getDataPosts() {
+      await this.page.evaluate(() => {
+         window.scrollTo(100000)
+      })
    }
-
 
 
 }
