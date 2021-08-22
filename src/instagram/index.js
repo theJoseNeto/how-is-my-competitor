@@ -1,7 +1,7 @@
 const Browser = require("../browser");
 const path = require('path');
 const fs = require('fs').promises;
- 
+
 class Instagram extends Browser {
 
    async login(user, pass) {
@@ -18,7 +18,6 @@ class Instagram extends Browser {
       const cookies = JSON.parse(cookiesString);
       await this.page.setCookie(...cookies);
    }
-
 
    async goToProfile(username) {
       await this.page.goto(`https://www.instagram.com/${username}`);
