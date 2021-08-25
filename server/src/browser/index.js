@@ -5,6 +5,7 @@ class Browser {
       this.browser = null;
       this.page = null;
    }
+   
    async launchBrowser(hdless = Boolean) {
       try {
 

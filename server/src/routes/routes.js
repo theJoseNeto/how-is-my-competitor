@@ -1,14 +1,10 @@
-const { login, index, getMainData } = require('../controllers/igController');
-
-const { startBrowser } = require('../middlewares/puppeteerBrowser');
+const { loginInstagram, index, getMainData } = require('../controllers/igController');
 
 const { Router } = require('express');
 const routes = new Router();
 
-
-routes.get('/', startBrowser, index);
-
-
-routes.post('/login', startBrowser, login)
+routes.get('/', index);
+routes.get('/login', loginInstagram);
+routes.get('/main-data', getMainData);
 
 module.exports = routes;

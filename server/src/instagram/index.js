@@ -5,12 +5,20 @@ const fs = require('fs').promises;
 class Instagram extends Browser {
 
    async login(user, pass) {
-      // await this.navigateTo('https://www.instagram.com/accounts/login/');
-      await this.page.type('input[type="text"]', user);
-      await this.page.type('input[type="password"]', pass);
-      await this.page.click('button[type="submit"]');
-      await this.cookiesSession();
-      await this.page.waitForTimeout(8000);
+
+
+      try {
+
+         await this.navigateTo('https://www.instagram.com/accounts/login/')
+         await this.page.type('input[type="text"]', user);
+         await this.page.type('input[type="password"]', pass);
+         await this.page.click('button[type="submit"]');
+         await this.page.waitForTimeout(8000);
+
+      } catch (error) {
+
+         console.log('erro ao tentar fazer login', error)
+      }
    }
 
    async cookiesSession() {
@@ -47,15 +55,14 @@ class Instagram extends Browser {
 
       });
 
-
-
       return data;
    }
 
    async bioData() {
       const bio = await this.page.evaluate(() => {
          const text = document.querySelector('div.-vDIg span');
-         return text.innerText;
+         if (text === null || text === undefined || text === false) return "Não há nada na bio";
+         return text.innerHTML;
       });
 
       return bio;
