@@ -1,10 +1,12 @@
-const { loginInstagram, index, getMainData } = require('../controllers/igController');
-
+const { loginInstagram, getMainData, getPostsData } = require('../controllers/igController');
+const loginController = require('../controllers/loginController');
 const { Router } = require('express');
-const routes = new Router();
+const route = new Router();
 
-routes.get('/', index);
-routes.get('/login', loginInstagram);
-routes.get('/main-data', getMainData);
 
-module.exports = routes;
+route.get('/', loginController.index)
+
+route.get('/mainData/:user', getMainData);
+route.get('/postData/:user', getPostsData);
+route.get('/login', loginInstagram);
+module.exports = route;

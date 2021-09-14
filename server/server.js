@@ -1,7 +1,14 @@
-const app = require('express')();
-const routes = require('./src/routes/routes');
+const server = require('express')();
+const { json } = require('express');
+
 const port = 3333;
 
-app.use(routes);
+const cors = require('cors');
+const routes = require('./src/routes/routes');
 
-app.listen(port);
+server.use(json());
+
+server.use(cors());
+server.use(routes);
+
+server.listen(port,);

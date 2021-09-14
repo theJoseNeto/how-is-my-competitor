@@ -5,24 +5,21 @@ class Browser {
       this.browser = null;
       this.page = null;
    }
-   
-   async launchBrowser(hdless = Boolean) {
+
+   async launchBrowser() {
       try {
 
          this.browser =
             await puppeteer.launch(
                {
-                  headless: hdless,
+                  headless: true,
                   timeout: 0,
                   args: ['--start-maximized']
                }
             )
-
-         if (this.browser.isConnected()) console.log('ON');
-
+         console.log('scrapper started!');
       } catch (error) {
          console.log(error);
-         return false;
       }
 
    }
@@ -40,9 +37,16 @@ class Browser {
 
 
    async createNewPage() {
-      this.page = await this.browser.newPage();
-      await this.configPage(this.page);
+      try {
 
+         this.page = await this.browser.newPage();
+         await this.configPage(this.page);
+
+      } catch (error) {
+
+         console.error(error);
+
+      }
    }
 
    async navigateTo(url) {

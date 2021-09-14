@@ -1,34 +1,64 @@
 require('dotenv').config();
-const Instagram = require('../instagram/index');
-const instagram = new Instagram;
-
-
-exports.index = async (req, res) => {
-   res.send('<h1>My competitor app</h1>')
-}
+const Instagram = require('../modules/instagram');
+const ig = new Instagram;
 
 exports.loginInstagram = async (req, res) => {
+   try {
+      await ig.launchBrowser();
+      await ig.createNewPage();
 
-   await instagram.launchBrowser(false); //headless? Choice true or false.
-   await instagram.createNewPage();
+      await ig.login(process.env.USER, process.env.PASS).then(() => {
 
-   await instagram.login(process.env.USER, process.env.PASS).then(() => {
+         res.json({ 'logged': true });
 
-      res.json({ "user logado": true });
-
-      instagram.browser.close();
-   });
+         ig.browser.close();
+      });
+   } catch (e) {
+      console.log('Erro no controller');
+      ig.browser.close();
+   }
 
 }
 
-exports.getMainData = async (require, response) => {
-   await instagram.launchBrowser(false);
-   await instagram.createNewPage();
+exports.getMainData = async (req, res) => {
 
-   await instagram.mainProfileData('thejoseneto.io')
-      .then(result => {
-         instagram.browser.close();
-         response.send(result)
-      });
+   try {
 
+      await ig.launchBrowser();
+      await ig.createNewPage()
+
+         .then(async () => {
+
+            const username = req.params.user;
+
+            await ig.mainProfileData(username).then(async result => {
+               await res.send(result);
+               await ig.browser.close().then(() => {
+                  console.log('scrapper encerrado');
+               });
+            }
+            );
+
+         })
+
+
+   } catch (e) {
+      console.log(e);
+   }
+
+}
+
+exports.getPostsData = async (req, res) => {
+   const user = req.params.user;
+   await ig.launchBrowser();
+
+   await ig.createNewPage().then(async () => {
+
+      await ig.analysePostData(user).then(result => {
+         res.json({ result });
+      })
+
+      await ig.browser.close().then(()=> console.log('scrapper end.'))
+
+   })
 }

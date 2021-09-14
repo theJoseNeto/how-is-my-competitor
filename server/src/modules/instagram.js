@@ -1,7 +1,6 @@
-const Browser = require("../browser");
+const Browser = require("./browser");
 const path = require('path');
 const fs = require('fs').promises;
-
 class Instagram extends Browser {
 
    async login(user, pass) {
@@ -50,7 +49,7 @@ class Instagram extends Browser {
       const data = await this.page.evaluate(() => {
 
          const data = document.querySelectorAll('ul.k9GMp span.g47SY');
-         const followers = data[1].title;
+         const followers = data[1].innerHTML;
          return followers;
 
       });
@@ -58,39 +57,45 @@ class Instagram extends Browser {
       return data;
    }
 
-   async bioData() {
-      const bio = await this.page.evaluate(() => {
-         const text = document.querySelector('div.-vDIg span');
-         if (text === null || text === undefined || text === false) return "Não há nada na bio";
-         return text.innerHTML;
-      });
-
-      return bio;
-   }
-
-
    async mainProfileData(competitor) {
-      let data = {};
+
+      let data = { username: competitor };
 
       await this.goToProfile(competitor);
-
       await this.numberOfPosts().then(res => data.posts = res);
-
       await this.numberOfFollowers().then(res => data.followers = res);
-
-      await this.bioData().then(res => data.bio = res);
-
       return data;
 
    }
 
+   async getAllLinks(competitor) {
 
-   async getDataPosts() {
-      await this.page.evaluate(() => {
-         window.scrollTo(100000)
+      await this.goToProfile(competitor);
+
+      const data = await this.page.evaluate(() => {
+         let allLinks = [];
+
+         const posts = document.querySelectorAll('article a');
+
+         posts.forEach(link => allLinks.push(link.href));
+
+         return allLinks;
       })
+
+      return data;
+
+
    }
 
+   async analysePostData(competitor) {
+
+      const links = await this.getAllLinks(competitor);
+
+      return links;
+
+
+
+   }
 
 }
 
@@ -105,3 +110,4 @@ module.exports = Instagram;
 //selctor  da div = k_Q0X I0_K8  NnvRN -> class
 //selector da tag time = _1o9PC Nzb55 -> class
 
+//||
